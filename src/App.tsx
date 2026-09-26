@@ -5,6 +5,7 @@ import { useAuthViewModel } from './viewmodels/useAuthViewModel'
 import { DashboardPage } from './pages/DashboardPage'
 import { LoginPage } from './pages/LoginPage'
 import { ConveniadosPage } from './pages/ConveniadosPage'
+import { PerfilPage } from './pages/PerfilPage'
 
 function LoginRoute() {
   const { user } = useAuthViewModel()
@@ -26,9 +27,12 @@ function App() {
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<LoginRoute />} />
           <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+          <Route path="/perfil" element={<ProtectedRoute><PerfilPage /></ProtectedRoute>} />
           <Route path="/conveniado" element={<ProtectedRoute><ConveniadosPage /></ProtectedRoute>} />
           <Route path="/conveniados" element={<ProtectedRoute><ConveniadosPage /></ProtectedRoute>} />
           <Route path="/colaboradores" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+          <Route path="/usuarios" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+          <Route path="/tela-a" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
           <Route path="/beneficios" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
           <Route path="/utilizacoes" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
           <Route path="/campanhas" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />

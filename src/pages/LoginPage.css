@@ -51,14 +51,14 @@
 
 .form-container > p {
   color: #6b7280;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
   font-size: 1.05rem;
 }
 
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.35rem;
 }
 
 .input-group {
@@ -74,6 +74,7 @@
 }
 
 .input-group input {
+  width: 100%;
   padding: 0.875rem 1rem;
   border: 1px solid #d1d5db;
   border-radius: 10px;
@@ -89,9 +90,45 @@
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
 }
 
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.password-input-wrapper input {
+  padding-right: 48px;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 12px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.password-toggle-btn:hover {
+  color: #1d4ed8;
+  background-color: #f3f4f6;
+}
+
 .login-error {
   color: #b91c1c;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 10px 12px;
   font-size: 0.875rem;
+  line-height: 1.4;
 }
 
 .login-success {
@@ -104,12 +141,12 @@
   color: white;
   border: none;
   border-radius: 10px;
-  padding: 1rem;
+  padding: 0.95rem;
   font-size: 1.05rem;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
-  margin-top: 0.5rem;
+  margin-top: 0.25rem;
   box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2), 0 2px 4px -1px rgba(37, 99, 235, 0.1);
 }
 
@@ -127,6 +164,7 @@
   opacity: 0.7;
 }
 
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -141,5 +179,8 @@
 @media (max-width: 768px) {
   .login-right {
     display: none;
+  }
+  .login-left {
+    padding: 1.5rem;
   }
 }

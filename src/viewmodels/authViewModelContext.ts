@@ -4,6 +4,7 @@ import type { AuthenticatedUser, LoginCredentials } from '../services/authServic
 export type AuthViewModelValue = {
   user: AuthenticatedUser | null
   signIn: (credentials: LoginCredentials) => Promise<void>
+  updateUser: (user: AuthenticatedUser) => void
   signOut: () => void
 }
 

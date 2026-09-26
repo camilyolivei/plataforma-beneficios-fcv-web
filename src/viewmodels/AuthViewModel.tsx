@@ -14,8 +14,12 @@ export function AuthViewModelProvider({ children }: PropsWithChildren) {
     setUser(null)
   }
 
+  function updateUser(updatedUser: AuthenticatedUser) {
+    setUser(updatedUser)
+  }
+
   return (
-    <AuthViewModelContext.Provider value={{ user, signIn, signOut }}>
+    <AuthViewModelContext.Provider value={{ user, signIn, updateUser, signOut }}>
       {children}
     </AuthViewModelContext.Provider>
   )

@@ -16,6 +16,7 @@ export function ConveniadosPage() {
       onLogout={logout}
       userName={user.name}
       userRole={user.role}
+      userAvatarUrl={user.avatarUrl}
     >
       <ConveniadosListView />
     </DashboardLayout>

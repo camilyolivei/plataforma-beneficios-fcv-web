@@ -263,6 +263,15 @@
 .table-scroll {
   width: 100%;
   overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.table-scroll::-webkit-scrollbar {
+  display: none !important;
+  height: 0 !important;
+  width: 0 !important;
+  background: transparent !important;
 }
 
 .conveniados-table {

@@ -1,4 +1,5 @@
 import { Search, Bell } from 'lucide-react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useHeaderViewModel } from '../../viewmodels/useHeaderViewModel'
 import type { DashboardSection } from '../../viewmodels/useDashboardNavigationViewModel'
 import { Logo } from '../Header/Logo'
@@ -9,11 +10,14 @@ type TopBarProps = {
   activeSection: DashboardSection
   userName?: string
   userRole?: string
+  userAvatarUrl?: string
   onNavigate: (section: DashboardSection) => void
   onLogout?: () => void
 }
 
-export function TopBar({ activeSection, userName, userRole, onNavigate, onLogout }: TopBarProps) {
+export function TopBar({ activeSection, userName, userRole, userAvatarUrl, onNavigate, onLogout }: TopBarProps) {
+  const navigate = useNavigate()
+  const location = useLocation()
   const {
     query,
     setQuery,
@@ -107,10 +111,14 @@ export function TopBar({ activeSection, userName, userRole, onNavigate, onLogout
         <UserMenu
           name={userName}
           role={userRole}
+          avatarUrl={userAvatarUrl}
           isOpen={isUserMenuOpen}
           onToggle={toggleUserMenu}
           onClose={closePopovers}
-          onConfigureMenu={() => onNavigate('configuracoes')}
+          onConfigureMenu={() => {
+            const currentRoute = `${location.pathname}${location.search}${location.hash}`
+            navigate('/perfil', { state: { from: currentRoute } })
+          }}
           onLogout={onLogout}
         />
       </div>

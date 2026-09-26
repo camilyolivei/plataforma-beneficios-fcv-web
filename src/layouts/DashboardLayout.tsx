@@ -11,9 +11,10 @@ type DashboardLayoutProps = {
   onLogout: () => void
   userName?: string
   userRole?: string
+  userAvatarUrl?: string
 }
 
-export function DashboardLayout({ children, activeSection, onNavigate, onLogout, userName, userRole }: DashboardLayoutProps) {
+export function DashboardLayout({ children, activeSection, onNavigate, onLogout, userName, userRole, userAvatarUrl }: DashboardLayoutProps) {
   return (
     <div className="dashboard-layout">
       <div className="dashboard-body">
@@ -21,6 +22,7 @@ export function DashboardLayout({ children, activeSection, onNavigate, onLogout,
           activeSection={activeSection}
           userName={userName}
           userRole={userRole}
+          userAvatarUrl={userAvatarUrl}
           onNavigate={onNavigate}
           onLogout={onLogout}
         />

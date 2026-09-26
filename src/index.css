@@ -6,6 +6,10 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: 'Inter', sans-serif;
   background-color: #f3f4f6;
@@ -13,3 +17,232 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* ==========================================================================
+   SCROLLBAR HORIZONTAL: 100% INVISÍVEL
+   Mantém a rolagem funcional sem exibir barra cinza em nenhuma resolução
+   ========================================================================== */
+
+*::-webkit-scrollbar:horizontal {
+  display: none !important;
+  height: 0px !important;
+  width: 0px !important;
+  background: transparent !important;
+  opacity: 0 !important;
+}
+
+*::-webkit-scrollbar-thumb:horizontal {
+  background: transparent !important;
+  border: 0 !important;
+}
+
+*::-webkit-scrollbar-track:horizontal {
+  background: transparent !important;
+  border: 0 !important;
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent !important;
+}
+
+/* ==========================================================================
+   SCROLLBAR VERTICAL PERSONALIZADA, MODERNA E ELEGANTE (Telas Grandes / Desktop)
+   Design minimalista tipo cápsula flutuante (pill), suave e integrado
+   ========================================================================== */
+
+@media (min-width: 769px) {
+  /* Suporte para Firefox e navegadores com suporte a CSS Scrollbars */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(23, 101, 179, 0.35) transparent;
+  }
+
+  /* Largura e dimensões da barra vertical */
+  ::-webkit-scrollbar:vertical,
+  *::-webkit-scrollbar:vertical {
+    display: block !important;
+    width: 9px !important;
+    background: transparent !important;
+  }
+
+  /* Trilha transparente e limpa */
+  ::-webkit-scrollbar-track:vertical,
+  *::-webkit-scrollbar-track:vertical {
+    background: transparent !important;
+  }
+
+  /* Indicador (Thumb) moderno estilo cápsula com padding interno flutuante */
+  ::-webkit-scrollbar-thumb:vertical,
+  *::-webkit-scrollbar-thumb:vertical {
+    background-color: rgba(23, 101, 179, 0.28) !important;
+    border-radius: 9999px !important;
+    border: 2px solid transparent !important;
+    background-clip: padding-box !important;
+    transition: background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Efeito Hover moderno com cor institucional FCV */
+  ::-webkit-scrollbar-thumb:vertical:hover,
+  *::-webkit-scrollbar-thumb:vertical:hover {
+    background-color: rgba(23, 101, 179, 0.65) !important;
+    border-width: 1.5px !important;
+  }
+
+  /* Efeito ao arrastar (Active) */
+  ::-webkit-scrollbar-thumb:vertical:active,
+  *::-webkit-scrollbar-thumb:vertical:active {
+    background-color: #1765b3 !important;
+    border-width: 1px !important;
+  }
+}
+
+/* ==========================================================================
+   Cursor Pointer apenas nos Elementos Realmente Clicáveis
+   ========================================================================== */
+
+button,
+[role="button"],
+[role="menuitem"],
+[role="option"],
+[role="tab"],
+[type="button"],
+[type="submit"],
+[type="reset"],
+a,
+select,
+summary,
+input[type="checkbox"],
+input[type="radio"],
+input[type="file"],
+input[type="file"]::file-selector-button,
+input[type="date"],
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="datetime-local"],
+input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+.clickable,
+.apply-filter,
+.profile-avatar-btn,
+.profile-cancel,
+.profile-save,
+.profile-back,
+.profile-modal-btn,
+.user-menu,
+.user-menu__option,
+.topbar-bell,
+.topbar-search__result {
+  cursor: pointer;
+}
+
+/* Elementos informativos e contêineres: cursor padrão */
+.dashboard-date-filter,
+.date-filter-title,
+.date-filter-divider,
+.dashboard-date-filter label,
+.dashboard-date-filter label span {
+  cursor: default;
+}
+
+/* Inputs de texto padrão mantém cursor de texto */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="number"],
+input[type="tel"],
+input[type="url"],
+textarea {
+  cursor: text;
+}
+
+/* Elementos desabilitados */
+button:disabled,
+[type="button"]:disabled,
+[type="submit"]:disabled,
+[type="reset"]:disabled,
+[aria-disabled="true"],
+:disabled {
+  cursor: not-allowed !important;
+}
+
+/* ==========================================================================
+   Mobile: Quebra automática para baixo (flex-wrap: wrap) se não couber
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .flex-row,
+  .flex-container,
+  .dashboard-filter,
+  .dashboard-date-filter,
+  .overview-heading,
+  .topbar-actions,
+  .profile-heading,
+  .profile-actions,
+  .profile-avatar-section,
+  .profile-avatar-buttons,
+  .profile-modal-actions,
+  .profile-modal-header,
+  .conveniados-header,
+  .conveniados-header__actions,
+  .conveniados-pagination-bar,
+  .pagination-controls,
+  .actions-cluster {
+    flex-wrap: wrap !important;
+  }
+}
+
+/* ==========================================================================
+   TOOLTIP GLOBAL — balão customizado via [data-tooltip]
+   ========================================================================== */
+
+[data-tooltip] {
+  position: relative;
+}
+
+[data-tooltip]::before,
+[data-tooltip]::after {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translateX(-50%);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: 9999;
+}
+
+/* Balão */
+[data-tooltip]::before {
+  content: attr(data-tooltip);
+  background: #1a2e4a;
+  color: #e8f3fc;
+  font-size: 11.5px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.4;
+  white-space: nowrap;
+  padding: 6px 10px;
+  border-radius: 7px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.22);
+  transform: translateX(-50%) translateY(4px);
+}
+
+/* Seta */
+[data-tooltip]::after {
+  content: '';
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #1a2e4a;
+  bottom: calc(100% + 2px);
+  transform: translateX(-50%) translateY(4px);
+}
+
+[data-tooltip]:hover::before,
+[data-tooltip]:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+

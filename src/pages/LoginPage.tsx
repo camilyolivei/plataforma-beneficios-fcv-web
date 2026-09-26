@@ -1,3 +1,5 @@
+import { Eye, EyeOff } from 'lucide-react'
+import { useState } from 'react'
 import { Logo } from '../components/Header/Logo'
 import { useLoginViewModel } from '../viewmodels/useLoginViewModel'
 import './LoginPage.css'
@@ -12,6 +14,8 @@ export function LoginPage() {
     setPassword,
     submit,
   } = useLoginViewModel()
+
+  const [showPassword, setShowPassword] = useState(false)
 
   return (
     <main className="login-layout">
@@ -35,19 +39,33 @@ export function LoginPage() {
                 required
               />
             </div>
+
             <div className="input-group">
               <label htmlFor="password">Senha</label>
-              <input
-                type="password"
-                id="password"
-                placeholder="Digite sua senha"
-                autoComplete="current-password"
-                value={password}
-                onChange={(event) => setPassword(event.currentTarget.value)}
-                required
-              />
+              <div className="password-input-wrapper">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  id="password"
+                  placeholder="Digite sua senha"
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(event) => setPassword(event.currentTarget.value)}
+                  required
+                />
+                <button
+                  type="button"
+                  className="password-toggle-btn"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? 'Ocultar senha' : 'Exibir senha'}
+                  title={showPassword ? 'Ocultar senha' : 'Exibir senha'}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
+
             {error && <p className="login-error" role="alert">{error}</p>}
+
             <button type="submit" className="submit-btn" disabled={isSubmitting}>
               {isSubmitting ? 'Entrando...' : 'Entrar'}
             </button>

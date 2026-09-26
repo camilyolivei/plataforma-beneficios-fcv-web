@@ -109,7 +109,7 @@ export function UserMenu({
             <span className="user-menu__option-icon" aria-hidden="true">
               <Settings size={17} />
             </span>
-            <span>Configurar menu</span>
+            <span>Configurar perfil</span>
           </button>
           <button
             className="user-menu__option user-menu__option--logout"
