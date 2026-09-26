@@ -20,7 +20,7 @@
 
 .login-right {
   flex: 1.2;
-  background-image: url('../assets/Ilustraçãofcv.svg');
+  background-image: url('../assets/images/login/Ilustraçãofcv.svg');
   background-size: cover;
   background-position: center right;
   background-repeat: no-repeat;
@@ -91,6 +91,11 @@
 
 .login-error {
   color: #b91c1c;
+  font-size: 0.875rem;
+}
+
+.login-success {
+  color: #166534;
   font-size: 0.875rem;
 }
 

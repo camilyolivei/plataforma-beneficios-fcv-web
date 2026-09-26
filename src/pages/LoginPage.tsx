@@ -7,6 +7,7 @@ export function LoginPage() {
     email,
     password,
     error,
+    success,
     isSubmitting,
     setEmail,
     setPassword,
@@ -48,6 +49,7 @@ export function LoginPage() {
               />
             </div>
             {error && <p className="login-error" role="alert">{error}</p>}
+            {success && <p className="login-success" role="status">{success}</p>}
             <button type="submit" className="submit-btn" disabled={isSubmitting}>
               {isSubmitting ? 'Entrando...' : 'Entrar'}
             </button>

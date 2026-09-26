@@ -3,21 +3,27 @@ export interface LoginCredentials {
   password: string
 }
 
-interface ApiError {
-  message?: string
+interface TemporaryUser extends LoginCredentials {
+  name: string
 }
 
-const apiUrl = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '')
+const temporaryUserDatabase: { users: TemporaryUser[] } = {
+  users: [
+    {
+    name: 'Usuário de demonstração',
+    email: 'usuario@fcv.com.br',
+    password: 'Fcv@123456',
+    },
+  ],
+}
 
 export async function login(credentials: LoginCredentials): Promise<void> {
-  const response = await fetch(`${apiUrl}/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(credentials),
-  })
+  const email = credentials.email.trim().toLowerCase()
+  const user = temporaryUserDatabase.users.find(
+    (temporaryUser) => temporaryUser.email.trim().toLowerCase() === email,
+  )
 
-  if (!response.ok) {
-    const body = await response.json().catch(() => null) as ApiError | null
-    throw new Error(body?.message || 'E-mail ou senha inválidos.')
+  if (!user || user.password !== credentials.password) {
+    throw new Error('E-mail ou senha inválidos.')
   }
 }

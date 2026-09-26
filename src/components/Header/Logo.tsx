@@ -1,4 +1,4 @@
-import logoFcv from '../../assets/brand/logofcv_blue.svg'
+import logoFcv from '../../assets/images/brand/logofcv_blue.svg'
 
 type LogoProps = {
   className?: string
