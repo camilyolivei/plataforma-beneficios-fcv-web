@@ -6,6 +6,7 @@ export interface LoginCredentials {
 export interface AuthenticatedUser {
   email: string
   name: string
+  role: string
 }
 
 interface TemporaryUser extends AuthenticatedUser {
@@ -15,8 +16,9 @@ interface TemporaryUser extends AuthenticatedUser {
 const temporaryUserDatabase: { users: TemporaryUser[] } = {
   users: [
     {
-      name: 'Usuário de demonstração',
+      name: 'Camily',
       email: 'usuario@fcv.com.br',
+      role: 'Administrador',
       password: 'Fcv@123456',
     },
   ],
@@ -32,5 +34,5 @@ export async function login(credentials: LoginCredentials): Promise<Authenticate
     throw new Error('E-mail ou senha inválidos.')
   }
 
-  return { email: user.email, name: user.name }
+  return { email: user.email, name: user.name, role: user.role }
 }

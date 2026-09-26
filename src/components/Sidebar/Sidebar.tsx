@@ -9,11 +9,10 @@ import {
   Calendar, 
   FileText, 
   Settings, 
-  HelpCircle, 
-  LogOut 
+  HelpCircle,
+  LogOut,
 } from 'lucide-react'
 import type { DashboardSection } from '../../viewmodels/useDashboardNavigationViewModel'
-import logoFcv from '../../assets/images/brand/logofcv_blue.svg'
 import './Sidebar.css'
 
 type SidebarProps = {
@@ -97,10 +96,6 @@ export function Sidebar({ activeSection, onNavigate, onLogout }: SidebarProps) {
 
   return (
     <aside className="sidebar" ref={sidebarRef}>
-      <div className="sidebar-logo">
-        <img src={logoFcv} alt="Fundação Cristiano Varella" />
-      </div>
-
       <nav className="sidebar-menu" aria-label="Navegação principal">
         {navigationGroups.map((group) => (
           <div className="sidebar-group" key={group.label}>
@@ -113,6 +108,8 @@ export function Sidebar({ activeSection, onNavigate, onLogout }: SidebarProps) {
                   key={item.id}
                   type="button"
                   data-section={item.id}
+                  aria-label={item.label}
+                  title={item.label}
                   className={`sidebar-item${isActive ? ' active' : ''}`}
                   aria-current={isActive ? 'page' : undefined}
                   onClick={() => onNavigate(item.id)}
@@ -132,6 +129,8 @@ export function Sidebar({ activeSection, onNavigate, onLogout }: SidebarProps) {
         <button
           type="button"
           data-section="ajuda"
+          aria-label="Ajuda"
+          title="Ajuda"
           className={`sidebar-item${activeSection === 'ajuda' ? ' active' : ''}`}
           aria-current={activeSection === 'ajuda' ? 'page' : undefined}
           onClick={() => onNavigate('ajuda')}
@@ -141,7 +140,13 @@ export function Sidebar({ activeSection, onNavigate, onLogout }: SidebarProps) {
           </span>
           <span>Ajuda</span>
         </button>
-        <button type="button" className="sidebar-item sidebar-item-logout" onClick={onLogout}>
+        <button
+          type="button"
+          className="sidebar-item sidebar-item-logout"
+          aria-label="Sair"
+          title="Sair"
+          onClick={onLogout}
+        >
           <span className="sidebar-icon" aria-hidden="true">
             <LogOut size={19} strokeWidth={1.8} />
           </span>

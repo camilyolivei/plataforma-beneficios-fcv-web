@@ -1,25 +1,46 @@
 import { LogOut, Menu, Settings, UserRound } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
+import './Header.css'
 
 type UserMenuProps = {
   name?: string
+  role?: string
   avatarUrl?: string
+  isOpen: boolean
+  onToggle: () => void
+  onClose: () => void
   onConfigureMenu?: () => void
   onLogout?: () => void
 }
 
 export function UserMenu({
   name = 'Nome do usuário',
+  role = 'Conta FCV',
   avatarUrl,
+  isOpen,
+  onToggle,
+  onClose,
   onConfigureMenu,
   onLogout,
 }: UserMenuProps) {
-  const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!isOpen) return
+
+    function closeOnOutsideClick(event: PointerEvent) {
+      if (event.target instanceof Node && !containerRef.current?.contains(event.target)) {
+        onClose()
+      }
+    }
+
+    document.addEventListener('pointerdown', closeOnOutsideClick)
+    return () => document.removeEventListener('pointerdown', closeOnOutsideClick)
+  }, [isOpen, onClose])
 
   function closeOnEscape(event: React.KeyboardEvent<HTMLDivElement>) {
     if (event.key === 'Escape') {
-      setIsOpen(false)
+      onClose()
       containerRef.current?.querySelector('button')?.focus()
     }
   }
@@ -28,12 +49,9 @@ export function UserMenu({
     <div
       ref={containerRef}
       className="user-menu-container"
-      onMouseEnter={() => setIsOpen(true)}
-      onMouseLeave={() => setIsOpen(false)}
-      onFocus={() => setIsOpen(true)}
       onBlur={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
-          setIsOpen(false)
+          onClose()
         }
       }}
       onKeyDown={closeOnEscape}
@@ -44,7 +62,7 @@ export function UserMenu({
         aria-label={`Menu do usuário: ${name}`}
         aria-haspopup="menu"
         aria-expanded={isOpen}
-        onClick={() => setIsOpen((open) => !open)}
+        onClick={onToggle}
       >
         {avatarUrl ? (
           <img className="user-menu__avatar" src={avatarUrl} alt="" />
@@ -53,7 +71,10 @@ export function UserMenu({
             <UserRound size={20} strokeWidth={1.75} />
           </span>
         )}
-        <span className="user-menu__name">{name}</span>
+        <span className="user-menu__details">
+          <span className="user-menu__name">{name}</span>
+          <span className="user-menu__role">{role}</span>
+        </span>
         <span className="user-menu__chevron" aria-hidden="true" />
         <span className="user-menu__mobile-icon" aria-hidden="true">
           <Menu size={22} strokeWidth={1.8} />
@@ -72,7 +93,7 @@ export function UserMenu({
             )}
             <span className="user-menu__account-details">
               <span className="user-menu__account-name">{name}</span>
-              <span className="user-menu__account-label">Conta FCV</span>
+              <span className="user-menu__account-label">{role}</span>
             </span>
           </div>
           <div className="user-menu__divider" />
@@ -82,7 +103,7 @@ export function UserMenu({
             role="menuitem"
             onClick={() => {
               onConfigureMenu?.()
-              setIsOpen(false)
+              onClose()
             }}
           >
             <span className="user-menu__option-icon" aria-hidden="true">
@@ -96,7 +117,7 @@ export function UserMenu({
             role="menuitem"
             onClick={() => {
               onLogout?.()
-              setIsOpen(false)
+              onClose()
             }}
           >
             <span className="user-menu__option-icon" aria-hidden="true">

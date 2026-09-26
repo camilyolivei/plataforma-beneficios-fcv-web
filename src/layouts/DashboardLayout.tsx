@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { Sidebar } from '../components/Sidebar/Sidebar'
+import { TopBar } from '../components/TopBar/TopBar'
 import type { DashboardSection } from '../viewmodels/useDashboardNavigationViewModel'
 import './DashboardLayout.css'
 
@@ -8,15 +9,28 @@ type DashboardLayoutProps = {
   activeSection: DashboardSection
   onNavigate: (section: DashboardSection) => void
   onLogout: () => void
+  userName?: string
+  userRole?: string
 }
 
-export function DashboardLayout({ children, activeSection, onNavigate, onLogout }: DashboardLayoutProps) {
+export function DashboardLayout({ children, activeSection, onNavigate, onLogout, userName, userRole }: DashboardLayoutProps) {
   return (
     <div className="dashboard-layout">
-      <Sidebar activeSection={activeSection} onNavigate={onNavigate} onLogout={onLogout} />
-      <main className="dashboard-content">
-        {children}
-      </main>
+      <div className="dashboard-body">
+        <TopBar
+          activeSection={activeSection}
+          userName={userName}
+          userRole={userRole}
+          onNavigate={onNavigate}
+          onLogout={onLogout}
+        />
+        <main className="dashboard-content">
+          <div className="dashboard-workspace">
+            <Sidebar activeSection={activeSection} onNavigate={onNavigate} onLogout={onLogout} />
+            <section className="dashboard-page-content">{children}</section>
+          </div>
+        </main>
+      </div>
     </div>
   )
 }
