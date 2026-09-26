@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuthViewModel } from './useAuthViewModel'
 
 export const dashboardSections = {
@@ -49,8 +48,25 @@ export type DashboardSection = keyof typeof dashboardSections
 
 export function useDashboardNavigationViewModel() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { signOut } = useAuthViewModel()
-  const [activeSection, setActiveSection] = useState<DashboardSection>('dashboard')
+
+  const rawPath = location.pathname.replace(/^\//, '').split('/')[0]
+  let activeSection: DashboardSection = 'dashboard'
+
+  if (rawPath === 'conveniado' || rawPath === 'conveniados') {
+    activeSection = 'conveniados'
+  } else if (rawPath in dashboardSections) {
+    activeSection = rawPath as DashboardSection
+  }
+
+  function navigateTo(targetSection: DashboardSection) {
+    if (targetSection === 'conveniados') {
+      navigate('/conveniado')
+    } else {
+      navigate(`/${targetSection}`)
+    }
+  }
 
   function logout() {
     signOut()
@@ -60,7 +76,7 @@ export function useDashboardNavigationViewModel() {
   return {
     activeSection,
     currentSection: dashboardSections[activeSection],
-    navigateTo: setActiveSection,
+    navigateTo,
     logout,
   }
-}
+}
