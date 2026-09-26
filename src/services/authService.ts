@@ -17,9 +17,9 @@ const temporaryUserDatabase: { users: TemporaryUser[] } = {
   users: [
     {
       name: 'Camily',
-      email: 'usuario@fcv.com.br',
+      email: 'c@g.com',
       role: 'Administrador',
-      password: 'Fcv@123456',
+      password: 'c',
     },
     {
       name: 'kaio',
