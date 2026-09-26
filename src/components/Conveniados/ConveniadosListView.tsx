@@ -1,0 +1,410 @@
+import {
+  Store,
+  Plus,
+  Search,
+  SlidersHorizontal,
+  CheckCircle2,
+  XCircle,
+  FileSpreadsheet,
+  Eye,
+  Pencil,
+  Trash2,
+  ChevronLeft,
+  ChevronRight,
+  Receipt,
+  Utensils,
+  HeartPulse,
+  ShoppingCart,
+  Smile,
+  Dumbbell,
+  Hotel,
+} from 'lucide-react'
+import { useConveniadosViewModel } from '../../viewmodels/useConveniadosViewModel'
+import type { CategoriaConveniado } from '../../services/conveniadosService'
+import './ConveniadosListView.css'
+
+export function ConveniadosListView() {
+  const {
+    conveniados,
+    totalItens,
+    totalPaginas,
+    paginaAtual,
+    setPaginaAtual,
+    metricas,
+    isLoading,
+    error,
+    busca,
+    setBusca,
+    statusFiltro,
+    setStatusFiltro,
+    categoriaFiltro,
+    setCategoriaFiltro,
+    selecionados,
+    isTodosSelecionados,
+    toggleSelecionarTodos,
+    toggleSelecionarItem,
+    setConveniadoEmVisualizacao,
+    setConveniadoEmEdicao,
+    setIsModalCadastroAberto,
+    setConveniadoParaExclusao,
+  } = useConveniadosViewModel()
+
+  const renderCategoriaIcon = (categoria: CategoriaConveniado) => {
+    switch (categoria) {
+      case 'Alimentação':
+        return <Utensils size={15} />
+      case 'Saúde':
+        return <HeartPulse size={15} />
+      case 'Mercado':
+        return <ShoppingCart size={15} />
+      case 'Odontológico':
+        return <Smile size={15} />
+      case 'Esporte e Lazer':
+        return <Dumbbell size={15} />
+      case 'Hospedagem':
+        return <Hotel size={15} />
+      default:
+        return <Store size={15} />
+    }
+  }
+
+  const getCategoriaClass = (categoria: CategoriaConveniado) => {
+    switch (categoria) {
+      case 'Alimentação':
+        return 'tag-alimentacao'
+      case 'Saúde':
+        return 'tag-saude'
+      case 'Mercado':
+        return 'tag-mercado'
+      case 'Odontológico':
+        return 'tag-odonto'
+      case 'Esporte e Lazer':
+        return 'tag-esporte'
+      case 'Hospedagem':
+        return 'tag-hospedagem'
+      default:
+        return 'tag-default'
+    }
+  }
+
+  return (
+    <div className="conveniados-container">
+      <div className="conveniados-header">
+        <div className="conveniados-header__titles">
+          <div className="conveniados-title-row">
+            <Store className="conveniados-main-icon" size={28} />
+            <h1 className="conveniados-title">Conveniados</h1>
+          </div>
+          <p className="conveniados-subtitle">
+            Gerencie os parceiros da Fundação. Cadastre, edite e consulte as informações e utilizações.
+          </p>
+        </div>
+
+        <div className="conveniados-header__actions">
+          <button
+            type="button"
+            className="btn-outline-action"
+            onClick={() => alert('Consulta rápida de utilização')}
+          >
+            <Receipt size={17} />
+            Consultar utilização
+          </button>
+
+          <button
+            type="button"
+            className="btn-outline-action"
+            onClick={() => {
+              if (selecionados.length === 1) {
+                const alvo = conveniados.find((c) => c.id === selecionados[0])
+                if (alvo) setConveniadoEmEdicao(alvo)
+              } else {
+                alert('Selecione exatamente 1 conveniado na tabela para editar.')
+              }
+            }}
+          >
+            <Pencil size={17} />
+            Editar parceiro
+          </button>
+
+          <button
+            type="button"
+            className="btn-primary-action"
+            onClick={() => setIsModalCadastroAberto(true)}
+          >
+            <Plus size={18} />
+            Cadastrar parceiro
+          </button>
+        </div>
+      </div>
+
+      {metricas && (
+        <div className="conveniados-kpis-grid">
+          <div className="kpi-card">
+            <div className="kpi-icon-circle kpi-icon-blue">
+              <Store size={22} />
+            </div>
+            <div className="kpi-content">
+              <span className="kpi-label">Total de conveniados</span>
+              <div className="kpi-number">{metricas.total}</div>
+              <span className="kpi-trend trend-positive">{metricas.totalCrescimento}</span>
+            </div>
+          </div>
+
+          <div className="kpi-card">
+            <div className="kpi-icon-circle kpi-icon-green">
+              <CheckCircle2 size={22} />
+            </div>
+            <div className="kpi-content">
+              <span className="kpi-label">Ativos</span>
+              <div className="kpi-number">{metricas.ativos}</div>
+              <span className="kpi-subtext">{metricas.ativosPercentual}</span>
+            </div>
+          </div>
+
+          <div className="kpi-card">
+            <div className="kpi-icon-circle kpi-icon-red">
+              <XCircle size={22} />
+            </div>
+            <div className="kpi-content">
+              <span className="kpi-label">Inativos</span>
+              <div className="kpi-number">{metricas.inativos}</div>
+              <span className="kpi-subtext">{metricas.inativosPercentual}</span>
+            </div>
+          </div>
+
+          <div className="kpi-card">
+            <div className="kpi-icon-circle kpi-icon-purple">
+              <FileSpreadsheet size={22} />
+            </div>
+            <div className="kpi-content">
+              <span className="kpi-label">Com utilizações</span>
+              <div className="kpi-number">{metricas.comUtilizacoes}</div>
+              <span className="kpi-subtext">{metricas.comUtilizacoesPercentual}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="conveniados-filters-bar">
+        <div className="search-input-wrapper">
+          <Search size={18} className="search-icon" />
+          <input
+            type="text"
+            className="search-input"
+            placeholder="Buscar por nome, CNPJ, categoria, cidade ou bairro..."
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+          />
+        </div>
+
+        <div className="filter-dropdown-group">
+          <label className="filter-label">Status</label>
+          <select
+            className="filter-select"
+            value={statusFiltro}
+            onChange={(e) => setStatusFiltro(e.target.value)}
+          >
+            <option value="Todos">Todos</option>
+            <option value="Ativo">Ativo</option>
+            <option value="Inativo">Inativo</option>
+          </select>
+        </div>
+
+        <div className="filter-dropdown-group">
+          <label className="filter-label">Categoria</label>
+          <select
+            className="filter-select"
+            value={categoriaFiltro}
+            onChange={(e) => setCategoriaFiltro(e.target.value)}
+          >
+            <option value="Todas">Todas</option>
+            <option value="Alimentação">Alimentação</option>
+            <option value="Saúde">Saúde</option>
+            <option value="Mercado">Mercado</option>
+            <option value="Odontológico">Odontológico</option>
+            <option value="Esporte e Lazer">Esporte e Lazer</option>
+            <option value="Hospedagem">Hospedagem</option>
+          </select>
+        </div>
+
+        <button type="button" className="btn-filter-toggle">
+          <SlidersHorizontal size={17} />
+          Filtros
+        </button>
+      </div>
+
+      <div className="conveniados-table-card">
+        {isLoading ? (
+          <div className="table-state-box">
+            <p>Carregando parceiros conveniados...</p>
+          </div>
+        ) : error ? (
+          <div className="table-state-box state-error">
+            <p>{error}</p>
+          </div>
+        ) : conveniados.length === 0 ? (
+          <div className="table-state-box">
+            <p>Nenhum parceiro conveniado encontrado com os filtros aplicados.</p>
+          </div>
+        ) : (
+          <div className="table-scroll">
+            <table className="conveniados-table">
+              <thead>
+                <tr>
+                  <th className="th-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={isTodosSelecionados}
+                      onChange={toggleSelecionarTodos}
+                      aria-label="Selecionar todos"
+                    />
+                  </th>
+                  <th>Parceiro</th>
+                  <th>CNPJ</th>
+                  <th>Categoria</th>
+                  <th>Endereço</th>
+                  <th>Status</th>
+                  <th>Utilizações</th>
+                  <th className="th-actions">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {conveniados.map((item) => {
+                  const isChecked = selecionados.includes(item.id)
+
+                  return (
+                    <tr key={item.id} className={isChecked ? 'row-selected' : ''}>
+                      <td className="td-checkbox">
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => toggleSelecionarItem(item.id)}
+                          aria-label={`Selecionar ${item.nome}`}
+                        />
+                      </td>
+
+                      <td className="td-partner">
+                        <div className="partner-cell">
+                          <div className="partner-avatar">
+                            {renderCategoriaIcon(item.categoria)}
+                          </div>
+                          <div className="partner-details">
+                            <span className="partner-name">{item.nome}</span>
+                            {item.subtitulo && (
+                              <span className="partner-sub">{item.subtitulo}</span>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className="td-cnpj">{item.cnpj}</td>
+
+                      <td>
+                        <span className={`category-tag ${getCategoriaClass(item.categoria)}`}>
+                          {renderCategoriaIcon(item.categoria)}
+                          {item.categoria}
+                        </span>
+                      </td>
+
+                      <td className="td-address">
+                        <span className="address-line">{item.endereco}</span>
+                        <span className="address-city">
+                          {item.bairro ? `${item.bairro} - ` : ''}
+                          {item.cidade}/{item.estado}
+                        </span>
+                      </td>
+
+                      <td>
+                        <span
+                          className={`status-pill ${
+                            item.status === 'Ativo' ? 'status-active' : 'status-inactive'
+                          }`}
+                        >
+                          <span className="status-dot" />
+                          {item.status}
+                        </span>
+                      </td>
+
+                      <td className="td-usages">
+                        <span className="usages-count">{item.utilizacoes}</span>
+                        <span className="usages-label">utilizações</span>
+                      </td>
+
+                      <td className="td-actions">
+                        <div className="actions-cluster">
+                          <button
+                            type="button"
+                            className="btn-icon-action"
+                            title="Visualizar detalhes"
+                            onClick={() => setConveniadoEmVisualizacao(item)}
+                          >
+                            <Eye size={17} />
+                          </button>
+                          <button
+                            type="button"
+                            className="btn-icon-action"
+                            title="Editar parceiro"
+                            onClick={() => setConveniadoEmEdicao(item)}
+                          >
+                            <Pencil size={17} />
+                          </button>
+                          <button
+                            type="button"
+                            className="btn-icon-action btn-icon-delete"
+                            title="Excluir parceiro"
+                            onClick={() => setConveniadoParaExclusao(item)}
+                          >
+                            <Trash2 size={17} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        <div className="conveniados-pagination-bar">
+          <span className="pagination-info">
+            Mostrando <strong>1 - {conveniados.length}</strong> de <strong>{totalItens}</strong> conveniados
+          </span>
+
+          <div className="pagination-controls">
+            <button
+              type="button"
+              className="pagination-btn"
+              disabled={paginaAtual <= 1}
+              onClick={() => setPaginaAtual((p) => Math.max(1, p - 1))}
+              aria-label="Página anterior"
+            >
+              <ChevronLeft size={16} />
+            </button>
+
+            {Array.from({ length: totalPaginas }, (_, i) => i + 1).map((num) => (
+              <button
+                key={num}
+                type="button"
+                className={`pagination-btn ${paginaAtual === num ? 'pagination-btn-active' : ''}`}
+                onClick={() => setPaginaAtual(num)}
+              >
+                {num}
+              </button>
+            ))}
+
+            <button
+              type="button"
+              className="pagination-btn"
+              disabled={paginaAtual >= totalPaginas}
+              onClick={() => setPaginaAtual((p) => Math.min(totalPaginas, p + 1))}
+              aria-label="Próxima página"
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
