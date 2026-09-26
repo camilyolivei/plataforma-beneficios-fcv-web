@@ -21,6 +21,13 @@ const temporaryUserDatabase: { users: TemporaryUser[] } = {
       role: 'Administrador',
       password: 'Fcv@123456',
     },
+    {
+      name: 'kaio',
+      email: 'kaio@gmail.com',
+      role: 'Administrador',
+      password: 'kaio123',
+    },
+
   ],
 }
 
