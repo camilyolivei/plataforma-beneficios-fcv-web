@@ -8,6 +8,7 @@ import {
   XCircle,
   FileSpreadsheet,
   Eye,
+  EyeOff,
   Pencil,
   Trash2,
   ChevronLeft,
@@ -102,6 +103,16 @@ export function ConveniadosListView() {
   const [form, setForm] = useState<FormCadastro>(FORM_VAZIO)
   const [formErro, setFormErro] = useState<string | null>(null)
   const [salvando, setSalvando] = useState(false)
+  const [utilizacoesOcultas, setUtilizacoesOcultas] = useState<Set<string>>(new Set())
+
+  function toggleUtilizacoes(id: string) {
+    setUtilizacoesOcultas(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
 
   function abrirModal() {
     setForm(FORM_VAZIO)
@@ -390,19 +401,25 @@ export function ConveniadosListView() {
                       </td>
 
                       <td className="td-usages">
-                        <span className="usages-count">{item.utilizacoes}</span>
-                        <span className="usages-label">utilizações</span>
+                        {utilizacoesOcultas.has(item.id) ? (
+                          <span className="usages-hidden">••••</span>
+                        ) : (
+                          <>
+                            <span className="usages-count">{item.utilizacoes}</span>
+                            <span className="usages-label">utilizações</span>
+                          </>
+                        )}
                       </td>
 
                       <td className="td-actions">
                         <div className="actions-cluster">
                           <button
                             type="button"
-                            className="btn-icon-action"
-                            title="Visualizar detalhes"
-                            onClick={() => setConveniadoEmVisualizacao(item)}
+                            className={`btn-icon-action ${utilizacoesOcultas.has(item.id) ? 'btn-icon-active' : ''}`}
+                            title={utilizacoesOcultas.has(item.id) ? 'Exibir utilizações' : 'Ocultar utilizações'}
+                            onClick={() => toggleUtilizacoes(item.id)}
                           >
-                            <Eye size={17} />
+                            {utilizacoesOcultas.has(item.id) ? <EyeOff size={17} /> : <Eye size={17} />}
                           </button>
                           <button
                             type="button"

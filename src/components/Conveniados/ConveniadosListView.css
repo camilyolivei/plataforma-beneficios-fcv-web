@@ -444,6 +444,19 @@
   margin-left: 4px;
 }
 
+.usages-hidden {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 0.12em;
+}
+
+.btn-icon-active {
+  background-color: #eff6ff !important;
+  color: #008bd2 !important;
+  border-color: #bfdbfe !important;
+}
+
 .th-actions, .td-actions {
   text-align: right;
   padding-right: 20px;
