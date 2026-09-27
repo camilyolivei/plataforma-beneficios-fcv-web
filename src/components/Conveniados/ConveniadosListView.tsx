@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   Store,
   Plus,
@@ -11,17 +12,64 @@ import {
   Trash2,
   ChevronLeft,
   ChevronRight,
-  Receipt,
   Utensils,
   HeartPulse,
   ShoppingCart,
   Smile,
   Dumbbell,
   Hotel,
+  X,
+  AlertCircle,
+  MapPin,
+  Phone,
+  Tag,
 } from 'lucide-react'
 import { useConveniadosViewModel } from '../../viewmodels/useConveniadosViewModel'
-import type { CategoriaConveniado } from '../../services/conveniadosService'
+import type { CategoriaConveniado, Conveniado } from '../../services/conveniadosService'
 import './ConveniadosListView.css'
+
+const CATEGORIAS: CategoriaConveniado[] = [
+  'Alimentação', 'Saúde', 'Mercado', 'Odontológico', 'Esporte e Lazer', 'Hospedagem', 'Educação', 'Outros',
+]
+
+const ESTADOS_BR = [
+  'AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG',
+  'PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO',
+]
+
+type FormCadastro = Omit<Conveniado, 'id' | 'utilizacoes' | 'dataCadastro'>
+
+const FORM_VAZIO: FormCadastro = {
+  nome: '',
+  subtitulo: '',
+  cnpj: '',
+  categoria: 'Alimentação',
+  endereco: '',
+  bairro: '',
+  cidade: '',
+  estado: 'MG',
+  status: 'Ativo',
+  telefone: '',
+  email: '',
+  responsavel: '',
+  descontoDescricao: '',
+}
+
+function formatarCNPJ(valor: string): string {
+  const digits = valor.replace(/\D/g, '').slice(0, 14)
+  return digits
+    .replace(/(\d{2})(\d)/, '$1.$2')
+    .replace(/(\d{2}\.\d{3})(\d)/, '$1.$2')
+    .replace(/(\.\d{3})(\d)/, '$1/$2')
+    .replace(/(\d{4})(\d)/, '$1-$2')
+}
+
+function formatarTelefone(valor: string): string {
+  const digits = valor.replace(/\D/g, '').slice(0, 11)
+  if (digits.length <= 10)
+    return digits.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3').replace(/-$/, '')
+  return digits.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3').replace(/-$/, '')
+}
 
 export function ConveniadosListView() {
   const {
@@ -45,9 +93,50 @@ export function ConveniadosListView() {
     toggleSelecionarItem,
     setConveniadoEmVisualizacao,
     setConveniadoEmEdicao,
+    isModalCadastroAberto,
     setIsModalCadastroAberto,
     setConveniadoParaExclusao,
+    handleSalvarNovo,
   } = useConveniadosViewModel()
+
+  const [form, setForm] = useState<FormCadastro>(FORM_VAZIO)
+  const [formErro, setFormErro] = useState<string | null>(null)
+  const [salvando, setSalvando] = useState(false)
+
+  function abrirModal() {
+    setForm(FORM_VAZIO)
+    setFormErro(null)
+    setIsModalCadastroAberto(true)
+  }
+
+  function fecharModal() {
+    setIsModalCadastroAberto(false)
+    setFormErro(null)
+  }
+
+  function handleField(field: keyof FormCadastro, value: string) {
+    setForm(prev => ({ ...prev, [field]: value }))
+  }
+
+  async function handleSubmitCadastro(e: React.FormEvent) {
+    e.preventDefault()
+    setFormErro(null)
+
+    if (!form.nome.trim()) { setFormErro('O nome do parceiro é obrigatório.'); return }
+    if (!form.cnpj.trim() || form.cnpj.replace(/\D/g, '').length < 14) { setFormErro('Informe um CNPJ válido com 14 dígitos.'); return }
+    if (!form.endereco.trim()) { setFormErro('O endereço é obrigatório.'); return }
+    if (!form.cidade.trim()) { setFormErro('A cidade é obrigatória.'); return }
+
+    setSalvando(true)
+    const ok = await handleSalvarNovo({ ...form, utilizacoes: 0 })
+    setSalvando(false)
+
+    if (ok) {
+      fecharModal()
+    } else {
+      setFormErro('Não foi possível cadastrar o parceiro. Tente novamente.')
+    }
+  }
 
   const renderCategoriaIcon = (categoria: CategoriaConveniado) => {
     switch (categoria) {
@@ -103,33 +192,8 @@ export function ConveniadosListView() {
         <div className="conveniados-header__actions">
           <button
             type="button"
-            className="btn-outline-action"
-            onClick={() => alert('Consulta rápida de utilização')}
-          >
-            <Receipt size={17} />
-            Consultar utilização
-          </button>
-
-          <button
-            type="button"
-            className="btn-outline-action"
-            onClick={() => {
-              if (selecionados.length === 1) {
-                const alvo = conveniados.find((c) => c.id === selecionados[0])
-                if (alvo) setConveniadoEmEdicao(alvo)
-              } else {
-                alert('Selecione exatamente 1 conveniado na tabela para editar.')
-              }
-            }}
-          >
-            <Pencil size={17} />
-            Editar parceiro
-          </button>
-
-          <button
-            type="button"
             className="btn-primary-action"
-            onClick={() => setIsModalCadastroAberto(true)}
+            onClick={abrirModal}
           >
             <Plus size={18} />
             Cadastrar parceiro
@@ -405,6 +469,236 @@ export function ConveniadosListView() {
           </div>
         </div>
       </div>
+
+      {isModalCadastroAberto && (
+        <div
+          className="modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-cadastro-titulo"
+          onClick={(e) => { if (e.target === e.currentTarget) fecharModal() }}
+        >
+          <div className="modal-card modal-card-lg">
+            <div className="modal-header">
+              <div className="modal-header__info">
+                <span className="modal-header__icon"><Store size={20} /></span>
+                <div>
+                  <h2 id="modal-cadastro-titulo" className="modal-header__title">Cadastrar Parceiro Conveniado</h2>
+                  <p className="modal-header__sub">Preencha as informações do novo estabelecimento parceiro da FCV.</p>
+                </div>
+              </div>
+              <button type="button" className="modal-close-btn" onClick={fecharModal} aria-label="Fechar modal">
+                <X size={20} />
+              </button>
+            </div>
+
+            <form className="modal-form" onSubmit={handleSubmitCadastro} noValidate>
+              <div className="modal-form-body">
+
+                <div className="modal-section-label">
+                  <Tag size={14} />
+                  Dados Principais
+                </div>
+                <div className="modal-grid modal-grid-2">
+                  <div className="modal-field modal-field-full">
+                    <label htmlFor="cadastro-nome">Nome do Parceiro <span className="modal-required">*</span></label>
+                    <input
+                      id="cadastro-nome"
+                      type="text"
+                      placeholder="Ex: Restaurante Sabor & Cia"
+                      value={form.nome}
+                      onChange={(e) => handleField('nome', e.target.value)}
+                      className="modal-input"
+                      required
+                    />
+                  </div>
+
+                  <div className="modal-field">
+                    <label htmlFor="cadastro-cnpj">CNPJ <span className="modal-required">*</span></label>
+                    <input
+                      id="cadastro-cnpj"
+                      type="text"
+                      placeholder="00.000.000/0001-00"
+                      value={form.cnpj}
+                      onChange={(e) => handleField('cnpj', formatarCNPJ(e.target.value))}
+                      className="modal-input"
+                      required
+                    />
+                  </div>
+
+                  <div className="modal-field">
+                    <label htmlFor="cadastro-categoria">Categoria <span className="modal-required">*</span></label>
+                    <select
+                      id="cadastro-categoria"
+                      value={form.categoria}
+                      onChange={(e) => handleField('categoria', e.target.value)}
+                      className="modal-input modal-select"
+                    >
+                      {CATEGORIAS.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+
+                  <div className="modal-field">
+                    <label htmlFor="cadastro-status">Status <span className="modal-required">*</span></label>
+                    <select
+                      id="cadastro-status"
+                      value={form.status}
+                      onChange={(e) => handleField('status', e.target.value)}
+                      className="modal-input modal-select"
+                    >
+                      <option value="Ativo">Ativo</option>
+                      <option value="Inativo">Inativo</option>
+                    </select>
+                  </div>
+
+                  <div className="modal-field modal-field-full">
+                    <label htmlFor="cadastro-subtitulo">Subtítulo / Descrição curta</label>
+                    <input
+                      id="cadastro-subtitulo"
+                      type="text"
+                      placeholder="Ex: Alimentação corporativa e à la carte"
+                      value={form.subtitulo}
+                      onChange={(e) => handleField('subtitulo', e.target.value)}
+                      className="modal-input"
+                    />
+                  </div>
+                </div>
+
+                <div className="modal-section-label">
+                  <MapPin size={14} />
+                  Endereço
+                </div>
+                <div className="modal-grid modal-grid-2">
+                  <div className="modal-field modal-field-full">
+                    <label htmlFor="cadastro-endereco">Logradouro <span className="modal-required">*</span></label>
+                    <input
+                      id="cadastro-endereco"
+                      type="text"
+                      placeholder="Ex: Av. Brasil, 123"
+                      value={form.endereco}
+                      onChange={(e) => handleField('endereco', e.target.value)}
+                      className="modal-input"
+                      required
+                    />
+                  </div>
+
+                  <div className="modal-field">
+                    <label htmlFor="cadastro-bairro">Bairro</label>
+                    <input
+                      id="cadastro-bairro"
+                      type="text"
+                      placeholder="Ex: Centro"
+                      value={form.bairro}
+                      onChange={(e) => handleField('bairro', e.target.value)}
+                      className="modal-input"
+                    />
+                  </div>
+
+                  <div className="modal-field">
+                    <label htmlFor="cadastro-cidade">Cidade <span className="modal-required">*</span></label>
+                    <input
+                      id="cadastro-cidade"
+                      type="text"
+                      placeholder="Ex: Muriaé"
+                      value={form.cidade}
+                      onChange={(e) => handleField('cidade', e.target.value)}
+                      className="modal-input"
+                      required
+                    />
+                  </div>
+
+                  <div className="modal-field">
+                    <label htmlFor="cadastro-estado">Estado <span className="modal-required">*</span></label>
+                    <select
+                      id="cadastro-estado"
+                      value={form.estado}
+                      onChange={(e) => handleField('estado', e.target.value)}
+                      className="modal-input modal-select"
+                    >
+                      {ESTADOS_BR.map(uf => <option key={uf} value={uf}>{uf}</option>)}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="modal-section-label">
+                  <Phone size={14} />
+                  Contato
+                </div>
+                <div className="modal-grid modal-grid-2">
+                  <div className="modal-field">
+                    <label htmlFor="cadastro-telefone">Telefone</label>
+                    <input
+                      id="cadastro-telefone"
+                      type="text"
+                      placeholder="(32) 99999-9999"
+                      value={form.telefone}
+                      onChange={(e) => handleField('telefone', formatarTelefone(e.target.value))}
+                      className="modal-input"
+                    />
+                  </div>
+
+                  <div className="modal-field">
+                    <label htmlFor="cadastro-email">E-mail</label>
+                    <input
+                      id="cadastro-email"
+                      type="email"
+                      placeholder="contato@parceiro.com.br"
+                      value={form.email}
+                      onChange={(e) => handleField('email', e.target.value)}
+                      className="modal-input"
+                    />
+                  </div>
+
+                  <div className="modal-field modal-field-full">
+                    <label htmlFor="cadastro-responsavel">Responsável</label>
+                    <input
+                      id="cadastro-responsavel"
+                      type="text"
+                      placeholder="Nome do responsável pelo convênio"
+                      value={form.responsavel}
+                      onChange={(e) => handleField('responsavel', e.target.value)}
+                      className="modal-input"
+                    />
+                  </div>
+
+                  <div className="modal-field modal-field-full">
+                    <label htmlFor="cadastro-desconto">Descrição do Benefício / Desconto</label>
+                    <textarea
+                      id="cadastro-desconto"
+                      placeholder="Ex: 10% de desconto no almoço para colaboradores FCV"
+                      value={form.descontoDescricao}
+                      onChange={(e) => handleField('descontoDescricao', e.target.value)}
+                      className="modal-input modal-textarea"
+                      rows={3}
+                    />
+                  </div>
+                </div>
+
+              </div>
+
+              {formErro && (
+                <div className="modal-error-banner">
+                  <AlertCircle size={16} />
+                  <span>{formErro}</span>
+                </div>
+              )}
+
+              <div className="modal-footer">
+                <button type="button" className="modal-btn-cancel" onClick={fecharModal} disabled={salvando}>
+                  Cancelar
+                </button>
+                <button type="submit" className="modal-btn-submit" disabled={salvando}>
+                  {salvando ? (
+                    <><span className="modal-spinner" />Cadastrando...</>
+                  ) : (
+                    <><Plus size={17} />Cadastrar Parceiro</>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
