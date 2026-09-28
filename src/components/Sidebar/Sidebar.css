@@ -11,6 +11,7 @@
   flex-direction: column;
   padding: 20px 14px 16px;
   border-right: 1px solid #e7ecf3;
+  scrollbar-color: transparent transparent;
 }
 
 .sidebar-logo {
@@ -41,6 +42,19 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  scrollbar-color: transparent transparent;
+}
+
+.sidebar::-webkit-scrollbar,
+.sidebar-menu::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sidebar::-webkit-scrollbar-track,
+.sidebar-menu::-webkit-scrollbar-track,
+.sidebar::-webkit-scrollbar-thumb,
+.sidebar-menu::-webkit-scrollbar-thumb {
+  background: transparent;
 }
 
 .sidebar-group {

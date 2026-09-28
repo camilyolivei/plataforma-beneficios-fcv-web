@@ -10,6 +10,7 @@ import './DashboardPanels.css'
 import './RecentPanel.css'
 import './PartnersPanel.css'
 import './BenefitsPanel.css'
+import './DashboardMobile.css'
 
 const chartColors = ['#1765c0', '#347fbd', '#5799ca', '#79add2', '#9bc4df', '#bfd9ea']
 

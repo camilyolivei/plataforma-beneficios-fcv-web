@@ -49,10 +49,10 @@
 }
 
 .bars-panel .bar-column {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
+  display: grid;
+  grid-template-rows: 48px minmax(0, 1fr) 48px;
+  align-items: end;
+  justify-items: center;
   height: 100%;
   gap: 6px;
   min-width: 0;
@@ -60,12 +60,16 @@
 }
 
 .bars-panel .bar-column strong {
-  font-size: 11px;
+  grid-row: 1;
+  align-self: center;
+  font-size: 12px;
   font-weight: 700;
   color: #24527f;
 }
 
 .bars-panel .bar-column i {
+  grid-row: 2;
+  align-self: end;
   display: block;
   width: 26px;
   max-height: 145px;
@@ -75,29 +79,23 @@
 }
 
 .bars-panel .bar-column span {
-  display: grid;
-  place-items: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: #e8f2f9;
-  color: #1765b3;
-  font-size: 11px;
-  font-weight: 700;
+  display: none;
 }
 
 .bars-panel .bar-column small {
+  grid-row: 3;
+  align-self: center;
   display: block;
   width: 100%;
-  max-width: 58px;
+  max-width: none;
+  min-height: 25px;
   color: #58718b;
-  font-size: 9.5px;
+  font-size: 12px;
   font-weight: 500;
   line-height: 1.2;
   text-align: center;
-  overflow: visible;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 @media (max-width: 1200px) {
@@ -107,6 +105,11 @@
       "bars bars"
       "partners recent";
     gap: 14px;
+  }
+
+  .bars-panel .bar-column strong,
+  .bars-panel .bar-column small {
+    font-size: 11px;
   }
 }
 
@@ -120,7 +123,13 @@
     gap: 12px;
   }
   .bars-panel .bars-chart {
+    grid-template-columns: repeat(6, minmax(74px, 1fr));
     overflow-x: auto;
     gap: 12px;
+  }
+
+  .bars-panel .bar-column strong,
+  .bars-panel .bar-column small {
+    font-size: 10px;
   }
 }
