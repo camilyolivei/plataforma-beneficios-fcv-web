@@ -40,7 +40,7 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 6px;
 }
 
 .sidebar-group {
@@ -152,7 +152,7 @@
 
 @media (max-height: 720px) {
   .sidebar-menu {
-    gap: 12px;
+    gap: 6px;
   }
 
   .sidebar-item {
@@ -170,7 +170,7 @@
   }
 
   .sidebar-menu {
-    gap: 14px;
+    gap: 6px;
   }
 
   .sidebar-group-label {

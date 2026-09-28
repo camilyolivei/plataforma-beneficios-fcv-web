@@ -1,9 +1,24 @@
-/* Grade inferior: 3 colunas harmônicas em linha única sem quebra de título */
+/* O gráfico de benefícios ocupa a primeira linha; os demais painéis ficam abaixo. */
 .dashboard-grid-bottom {
   display: grid;
-  grid-template-columns: 1fr 1.08fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-areas:
+    "bars bars"
+    "partners recent";
   gap: 16px;
   align-items: stretch;
+}
+
+.partners-panel {
+  grid-area: partners;
+}
+
+.bars-panel {
+  grid-area: bars;
+}
+
+.recent-panel {
+  grid-area: recent;
 }
 
 .bars-panel .panel-heading h2 {
@@ -87,21 +102,22 @@
 
 @media (max-width: 1200px) {
   .dashboard-grid-bottom {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      "bars bars"
+      "partners recent";
     gap: 14px;
-  }
-  .recent-panel {
-    grid-column: span 2;
   }
 }
 
 @media (max-width: 768px) {
   .dashboard-grid-bottom {
     grid-template-columns: 1fr;
+    grid-template-areas:
+      "bars"
+      "partners"
+      "recent";
     gap: 12px;
-  }
-  .recent-panel {
-    grid-column: auto;
   }
   .bars-panel .bars-chart {
     overflow-x: auto;
