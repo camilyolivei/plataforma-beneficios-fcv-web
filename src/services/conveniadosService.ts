@@ -168,9 +168,9 @@ const STORAGE_KEY = 'fcv_conveniados_db'
 function carregarDoStorage(): Conveniado[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) {
+    if (raw !== null) {
       const parsed = JSON.parse(raw)
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed
+      if (Array.isArray(parsed)) return parsed
     }
   } catch {
     // Falha silenciosa de parsing
@@ -263,7 +263,7 @@ export async function excluirConveniado(id: string): Promise<boolean> {
 
 export async function obterMetricasConveniados(): Promise<MetricasConveniados> {
   const lista = carregarDoStorage()
-  const total = 412
+  const total = lista.length
   const ativos = lista.filter((c) => c.status === 'Ativo').length
   const inativos = lista.filter((c) => c.status === 'Inativo').length
   const comUtilizacoes = lista.filter((c) => c.utilizacoes > 0).length
@@ -271,11 +271,11 @@ export async function obterMetricasConveniados(): Promise<MetricasConveniados> {
   return {
     total,
     totalCrescimento: '↑ 5% em relação ao mês anterior',
-    ativos: ativos > 0 ? 378 : 0,
-    ativosPercentual: '92% do total',
-    inativos: inativos > 0 ? 34 : 0,
-    inativosPercentual: '8% do total',
-    comUtilizacoes: comUtilizacoes > 0 ? 312 : 0,
-    comUtilizacoesPercentual: '76% do total',
+    ativos,
+    ativosPercentual: total > 0 ? `${Math.round((ativos / total) * 100)}% do total` : '0%',
+    inativos,
+    inativosPercentual: total > 0 ? `${Math.round((inativos / total) * 100)}% do total` : '0%',
+    comUtilizacoes,
+    comUtilizacoesPercentual: total > 0 ? `${Math.round((comUtilizacoes / total) * 100)}% do total` : '0%',
   }
 }

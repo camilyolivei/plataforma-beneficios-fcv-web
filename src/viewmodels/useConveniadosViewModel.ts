@@ -27,7 +27,7 @@ export function useConveniadosViewModel() {
   // Seleção múltipla
   const [selecionados, setSelecionados] = useState<string[]>([])
 
-  // Estado para modais (preparado para as próximas etapas)
+  // Estado para modais
   const [conveniadoEmVisualizacao, setConveniadoEmVisualizacao] = useState<Conveniado | null>(null)
   const [conveniadoEmEdicao, setConveniadoEmEdicao] = useState<Conveniado | null>(null)
   const [isModalCadastroAberto, setIsModalCadastroAberto] = useState<boolean>(false)

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
   Store,
   Plus,
@@ -21,6 +21,7 @@ import {
   Hotel,
   X,
   AlertCircle,
+  AlertTriangle,
   MapPin,
   Phone,
   Tag,
@@ -92,11 +93,15 @@ export function ConveniadosListView() {
     isTodosSelecionados,
     toggleSelecionarTodos,
     toggleSelecionarItem,
-    setConveniadoEmVisualizacao,
     setConveniadoEmEdicao,
     isModalCadastroAberto,
     setIsModalCadastroAberto,
+    conveniadoParaExclusao,
     setConveniadoParaExclusao,
+    isExcluindo,
+    feedbackMensagem,
+    setFeedbackMensagem,
+    handleExcluir,
     handleSalvarNovo,
   } = useConveniadosViewModel()
 
@@ -104,6 +109,35 @@ export function ConveniadosListView() {
   const [formErro, setFormErro] = useState<string | null>(null)
   const [salvando, setSalvando] = useState(false)
   const [utilizacoesOcultas, setUtilizacoesOcultas] = useState<Set<string>>(new Set())
+
+  // Fechar feedback automaticamente após 4,5 segundos
+  useEffect(() => {
+    if (!feedbackMensagem) return
+    const timer = setTimeout(() => {
+      setFeedbackMensagem(null)
+    }, 4500)
+    return () => clearTimeout(timer)
+  }, [feedbackMensagem, setFeedbackMensagem])
+
+  const fecharModal = useCallback(() => {
+    setIsModalCadastroAberto(false)
+    setFormErro(null)
+  }, [setIsModalCadastroAberto])
+
+  // Fechar modais ao pressionar tecla ESC
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        if (conveniadoParaExclusao && !isExcluindo) {
+          setConveniadoParaExclusao(null)
+        } else if (isModalCadastroAberto && !salvando) {
+          fecharModal()
+        }
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [conveniadoParaExclusao, isExcluindo, isModalCadastroAberto, salvando, fecharModal, setConveniadoParaExclusao])
 
   function toggleUtilizacoes(id: string) {
     setUtilizacoesOcultas(prev => {
@@ -118,11 +152,6 @@ export function ConveniadosListView() {
     setForm(FORM_VAZIO)
     setFormErro(null)
     setIsModalCadastroAberto(true)
-  }
-
-  function fecharModal() {
-    setIsModalCadastroAberto(false)
-    setFormErro(null)
   }
 
   function handleField(field: keyof FormCadastro, value: string) {
@@ -714,6 +743,149 @@ export function ConveniadosListView() {
               </div>
             </form>
           </div>
+        </div>
+      )}
+
+      {/* Modal de Confirmação de Exclusão */}
+      {conveniadoParaExclusao && (
+        <div
+          className="modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-exclusao-titulo"
+          aria-describedby="modal-exclusao-desc"
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !isExcluindo) {
+              setConveniadoParaExclusao(null)
+            }
+          }}
+        >
+          <div className="modal-card modal-confirm-card">
+            <div className="modal-confirm-header">
+              <span className="modal-confirm-icon-danger" aria-hidden="true">
+                <Trash2 size={24} />
+              </span>
+              <div className="modal-confirm-title-area">
+                <h2 id="modal-exclusao-titulo" className="modal-confirm-title">
+                  Excluir parceiro conveniado
+                </h2>
+                <p id="modal-exclusao-desc" className="modal-confirm-subtitle">
+                  Esta ação removerá o estabelecimento do catálogo de parceiros.
+                </p>
+              </div>
+              <button
+                type="button"
+                className="modal-close-btn"
+                onClick={() => !isExcluindo && setConveniadoParaExclusao(null)}
+                aria-label="Fechar modal"
+                disabled={isExcluindo}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="modal-confirm-body">
+              <p className="modal-confirm-text">
+                Tem certeza de que deseja excluir o conveniado{' '}
+                <strong>{conveniadoParaExclusao.nome}</strong>?
+              </p>
+
+              <div className="modal-confirm-target-box">
+                <div className="modal-confirm-target-header">
+                  <span className="modal-confirm-target-name">
+                    {conveniadoParaExclusao.nome}
+                  </span>
+                  <span className={`category-tag ${getCategoriaClass(conveniadoParaExclusao.categoria)}`}>
+                    {renderCategoriaIcon(conveniadoParaExclusao.categoria)}
+                    {conveniadoParaExclusao.categoria}
+                  </span>
+                </div>
+                <div className="modal-confirm-target-meta">
+                  <span>
+                    <strong>CNPJ:</strong> {conveniadoParaExclusao.cnpj}
+                  </span>
+                  <span>
+                    <MapPin size={13} />
+                    {conveniadoParaExclusao.cidade}/{conveniadoParaExclusao.estado}
+                  </span>
+                  <span>
+                    <strong>Status:</strong> {conveniadoParaExclusao.status}
+                  </span>
+                  <span>
+                    <strong>{conveniadoParaExclusao.utilizacoes}</strong> utilizações registradas
+                  </span>
+                </div>
+              </div>
+
+              <div className="modal-confirm-alert">
+                <AlertTriangle size={18} />
+                <span>
+                  <strong>Atenção:</strong> Esta ação é irreversível. Colaboradores não poderão mais usufruir de convênios com este estabelecimento.
+                </span>
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="modal-btn-cancel"
+                onClick={() => setConveniadoParaExclusao(null)}
+                disabled={isExcluindo}
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                className="modal-btn-danger"
+                onClick={() => handleExcluir(conveniadoParaExclusao.id)}
+                disabled={isExcluindo}
+              >
+                {isExcluindo ? (
+                  <>
+                    <span className="modal-spinner" />
+                    Excluindo...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 size={16} />
+                    Sim, excluir parceiro
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Notificação Toast de Feedback */}
+      {feedbackMensagem && (
+        <div
+          className={`conveniados-toast ${
+            feedbackMensagem.tipo === 'sucesso'
+              ? 'conveniados-toast-success'
+              : 'conveniados-toast-error'
+          }`}
+          role="status"
+          aria-live="polite"
+        >
+          <div className="conveniados-toast__icon">
+            {feedbackMensagem.tipo === 'sucesso' ? (
+              <CheckCircle2 size={18} />
+            ) : (
+              <AlertCircle size={18} />
+            )}
+          </div>
+          <div className="conveniados-toast__content">
+            {feedbackMensagem.texto}
+          </div>
+          <button
+            type="button"
+            className="conveniados-toast__close"
+            onClick={() => setFeedbackMensagem(null)}
+            aria-label="Fechar notificação"
+          >
+            <X size={16} />
+          </button>
         </div>
       )}
     </div>
